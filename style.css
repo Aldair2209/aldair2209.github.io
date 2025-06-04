@@ -1,102 +1,162 @@
+/* Reset y base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-    font-family: Arial;
-    margin: 20px;
-  }
-  input, select, button {
-    display: block;
-    margin: 10px 0px;
-    padding: 4px;
-  }
-  body {
-    background-color: #d3d3d3; /* gris medio */
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
+  background-color: #f0f2f5;  /* gris muy suave */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  line-height: 1.6;
+  padding: 20px;
+}
 
-  h1 {
-    text-align: center;
-    margin-top: 30px;
-    color: #222;
-  }
+/* Título centrado con espaciado */
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 700;
+  font-size: 2.5rem;
+  color: #2c3e50;
+}
 
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 50px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    margin-top: 20px;
+/* Contenedor principal */
+.container {
+  max-width: 600px;
+  background: #ffffff;
+  margin: 0 auto 40px auto;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
 
-  }
+/* Formulario */
+form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #34495e;
+  font-size: 0.95rem;
+}
 
-  form label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
-  }
+form input[type="text"],
+form input[type="email"],
+form select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border: 1.5px solid #bdc3c7;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
 
-  form input, form select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form select:focus {
+  outline: none;
+  border-color: #e74c3c;
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.4);
+}
 
-  .boton {
-    background-color: #c0392b;
-    color: white;
-    padding: 10px 20px;
-    margin-top: 15px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    width: 100%;
-  }
+/* Botón */
+.boton {
+  background-color: #e74c3c;
+  color: white;
+  padding: 14px 0;
+  width: 100%;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
 
-  .boton:hover {
-    background-color: #e74c3c;
-  }
+.boton:hover {
+  background-color: #c0392b;
+  box-shadow: 0 6px 15px rgba(192, 57, 43, 0.6);
+}
 
-  table {
-    width: 90%;
-    margin: 30px auto;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  }
+/* Tabla */
+table {
+  width: 90%;
+  margin: 0 auto 50px auto;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  font-size: 1rem;
+  color: #2c3e50;
+}
 
-  th, td {
-    padding: 12px 15px;
-    text-align: left;
-  }
+thead tr {
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+}
 
-  th {
-    background-color: #444;
-    color: #fff;
-  }
+thead th {
+  padding: 15px 20px;
+  text-align: left;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
 
-  tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
+tbody tr {
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border-radius: 10px;
+  transition: transform 0.2s ease;
+}
 
-  .riesgo-bajo {
-    background-color: #d4edda !important;
-  }
+tbody tr:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
 
-  .riesgo-medio {
-    background-color: #fff3cd !important;
-  }
+tbody td {
+  padding: 15px 20px;
+  border-top: none;
+  vertical-align: middle;
+}
 
-  .riesgo-alto {
-    background-color: #f8d7da !important;
-  }
-  .riesgo-bajo  { background-color: #d4edda !important; }
-  .riesgo-medio { background-color: #fff3cd !important; }
-  .riesgo-alto  { background-color: #f8d7da !important; }
-    
+/* Colores por nivel de riesgo */
+.riesgo-bajo {
+  background-color: #d4edda !important;  /* verde claro */
+  color: #155724;
+  font-weight: 600;
+}
+
+.riesgo-medio {
+  background-color: #fff3cd !important;  /* amarillo claro */
+  color: #856404;
+  font-weight: 600;
+}
+
+.riesgo-alto {
+  background-color: #f8d7da !important;  /* rojo claro */
+  color: #721c24;
+  font-weight: 600;
+}
+
+/* Título gráfico */
+h2 {
+  text-align: center;
+  font-weight: 700;
+  color: #34495e;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+}
+
+/* Canvas del gráfico */
+canvas#graficoRiesgo {
+  display: block;
+  margin: 0 auto 40px auto;
+  max-width: 90%;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
