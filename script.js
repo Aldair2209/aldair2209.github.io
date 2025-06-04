@@ -26,7 +26,7 @@ const db        = getFirestore(app);
 
 // -------------------------------------------------------------
 // Mapbox
-const MAPBOX_TOKEN = "pk.eyJ1IjoiYWxkYWlyMjIwOSIsImEiOiJjbWJoNXVhMWwwNmptMmlvbmR5aGpremZ3In0.xr_AacCgtuqaJ59XdADkbw";
+const MAPBOX_TOKEN = "pk.eyJ1IjoiYWxkYWlyMjIwOSIsImEiOiJjbWJoYjFhbDEwOGNtMmlvbHdjajh0eXZnIn0.S7fvv4FVHbVAfLxqtX8hxQ";
 
 // Colores para cada nivel de riesgo
 const coloresRiesgo = {
