@@ -1,15 +1,13 @@
-// -------------------------------------------------------------
-// Firebase SDK (v11.8.1)
+/* ---------- Firebase ---------- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
 import {
   getFirestore,
   collection,
   addDoc,
-  getDocs,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-// Configuración Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyATMynxurMN4LNI18z_ATn_OhGGJ9Ko4zk",
   authDomain: "ciberseguridad22.firebaseapp.com",
@@ -17,32 +15,17 @@ const firebaseConfig = {
   storageBucket: "ciberseguridad22.appspot.com",
   messagingSenderId: "799641106752",
   appId: "1:799641106752:web:6bfe439994a9281ffc62a5",
-  measurementId: "G-QBS34FQJM7",
+  measurementId: "G-QBS34FQJM7"
 };
 
 const app       = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const analytics = getAnalytics(app);       // opcional
 const db        = getFirestore(app);
 
-// -------------------------------------------------------------
-// Mapbox
-const MAPBOX_TOKEN = "pk.eyJ1IjoiYWxkYWlyMjIwOSIsImEiOiJjbWJoYjFhbDEwOGNtMmlvbHdjajh0eXZnIn0.S7fvv4FVHbVAfLxqtX8hxQ";
+/* ---------- Variables globales ---------- */
+let grafico = null;      // referencia al gráfico Chart.js
 
-// Colores para cada nivel de riesgo
-const coloresRiesgo = {
-  Bajo:  "#28a745", // verde
-  Medio: "#ffc107", // amarillo
-  Alto:  "#dc3545", // rojo
-};
-
-// -------------------------------------------------------------
-// Variables globales
-let chartRiesgo = null;
-let map         = null;
-let markers     = [];
-
-// -------------------------------------------------------------
-// Registrar cliente
+/* ---------- Enviar formulario ---------- */
 document.getElementById("clientForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -50,10 +33,6 @@ document.getElementById("clientForm").addEventListener("submit", async (e) => {
   const correo      = document.getElementById("correo").value.trim();
   const empresa     = document.getElementById("empresa").value.trim();
   const nivelRiesgo = document.getElementById("nivelRiesgo").value;
-  const ciudad      = document.getElementById("ciudad").value.trim();
-  const pais        = document.getElementById("pais").value.trim();
-  const latitud     = parseFloat(document.getElementById("latitud").value)  || null;
-  const longitud    = parseFloat(document.getElementById("longitud").value) || null;
 
   try {
     await addDoc(collection(db, "clientes"), {
@@ -61,116 +40,86 @@ document.getElementById("clientForm").addEventListener("submit", async (e) => {
       correo,
       empresa,
       nivelRiesgo,
-      ciudad,
-      pais,
-      lat: latitud,
-      lng: longitud,
-      fechaRegistro: new Date(),
+      fechaRegistro: new Date()
     });
+
     alert("Cliente registrado 🟢");
     e.target.reset();
-    cargarClientes();     // refrescar tabla, gráfico y mapa
-  } catch (error) {
-    alert("Error al guardar cliente: " + error);
+    cargarClientes();       // refresca tabla + gráfico
+  } catch (err) {
+    console.error("Error al registrar cliente:", err);
+    alert("Error al registrar cliente");
   }
 });
 
-// -------------------------------------------------------------
-// Cargar clientes y actualizar UI (tabla, gráfico, mapa)
+/* ---------- Mostrar lista + gráfico ---------- */
 async function cargarClientes() {
   const lista = document.getElementById("clientesLista");
   lista.innerHTML = "";
 
   const snap = await getDocs(collection(db, "clientes"));
 
-  // contadores para gráfico
-  const conteoRiesgos = { Bajo: 0, Medio: 0, Alto: 0 };
+  // contadores para el gráfico
+  let bajo = 0, medio = 0, alto = 0;
 
-  // limpiar marcadores existentes
-  markers.forEach(m => m.remove());
-  markers = [];
-
-  snap.forEach(d => {
-    const c = d.data();
-    if (conteoRiesgos[c.nivelRiesgo] !== undefined) conteoRiesgos[c.nivelRiesgo]++;
-
-    // ----- Tabla -----
+  snap.forEach((doc) => {
+    const c  = doc.data();
     const tr = document.createElement("tr");
-    tr.classList.add(
-      c.nivelRiesgo === "Bajo"  ? "riesgo-bajo"  :
-      c.nivelRiesgo === "Medio" ? "riesgo-medio" :
-      "riesgo-alto"
-    );
+
+    // colorear fila según riesgo
+    const riesgo = c.nivelRiesgo.toLowerCase();
+    if (riesgo === "bajo")       { tr.classList.add("riesgo-bajo"); bajo++;  }
+    else if (riesgo === "medio") { tr.classList.add("riesgo-medio"); medio++; }
+    else if (riesgo === "alto")  { tr.classList.add("riesgo-alto"); alto++;  }
+
     tr.innerHTML = `
       <td>${c.nombre}</td>
       <td>${c.empresa}</td>
       <td>${c.correo}</td>
       <td>${c.nivelRiesgo}</td>
-      <td>${c.ciudad}</td>
-      <td>${c.pais}</td>
     `;
     lista.appendChild(tr);
+  });
 
-    // ----- Mapa -----
-    if (c.lat != null && c.lng != null && !isNaN(c.lat) && !isNaN(c.lng)) {
-      const marker = new mapboxgl.Marker({ color: coloresRiesgo[c.nivelRiesgo] || "#444" })
-        .setLngLat([c.lng, c.lat])
-        .setPopup(
-          new mapboxgl.Popup({ offset: 25 }).setHTML(`
-            <h3>${c.nombre}</h3>
-            <p><strong>Empresa:</strong> ${c.empresa}</p>
-            <p><strong>Riesgo:</strong> ${c.nivelRiesgo}</p>
-            <p><strong>Ubicación:</strong> ${c.ciudad}, ${c.pais}</p>
-          `)
-        )
-        .addTo(map);
-      markers.push(marker);
+  // mensaje si no hay registros
+  if (!lista.children.length) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="4">No hay clientes registrados.</td>`;
+    lista.appendChild(tr);
+  }
+
+  actualizarGrafico(bajo, medio, alto);
+}
+
+/* ---------- Crear / actualizar gráfico ---------- */
+function actualizarGrafico(bajo, medio, alto) {
+  const ctx = document.getElementById("graficoRiesgo").getContext("2d");
+
+  if (grafico) grafico.destroy();   // elimina gráfico anterior
+
+  grafico = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ["Bajo", "Medio", "Alto"],
+      datasets: [{
+        label: "Clientes por Nivel de Riesgo",
+        data: [bajo, medio, alto],
+        backgroundColor: ["#28a745", "#ffc107", "#dc3545"],
+        borderColor: ["#1e7e34", "#d39e00", "#c82333"],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 }
+        }
+      }
     }
   });
-
-  actualizarGrafico(conteoRiesgos);
 }
 
-// -------------------------------------------------------------
-// Gráfico de barras
-function actualizarGrafico(conteos) {
-  const ctx = document.getElementById("graficoRiesgo").getContext("2d");
-  const datos = {
-    labels: ["Bajo", "Medio", "Alto"],
-    datasets: [{
-      label: "Clientes por Nivel de Riesgo",
-      data: [conteos.Bajo, conteos.Medio, conteos.Alto],
-      backgroundColor: ["#28a745", "#ffc107", "#dc3545"],
-    }],
-  };
-
-  if (chartRiesgo) {
-    chartRiesgo.data = datos;
-    chartRiesgo.update();
-  } else {
-    chartRiesgo = new Chart(ctx, { type: "bar", data: datos, options: {
-      responsive: true,
-      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-    }});
-  }
-}
-
-// -------------------------------------------------------------
-// Inicializar mapa
-function inicializarMapa() {
-  mapboxgl.accessToken = MAPBOX_TOKEN;
-  map = new mapboxgl.Map({
-    container: "mapa",
-    style: "mapbox://styles/mapbox/streets-v11",
-    center: [-77.0428, -12.0464],   // Lima por defecto
-    zoom: 5,
-  });
-  map.addControl(new mapboxgl.NavigationControl());
-}
-
-// -------------------------------------------------------------
-// Carga inicial
-window.onload = () => {
-  inicializarMapa();
-  cargarClientes();
-};
+/* ---------- Carga inicial ---------- */
+cargarClientes();
