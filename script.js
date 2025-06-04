@@ -27,7 +27,7 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 // Mapbox Access Token (regístrate en mapbox.com y pon tu token aquí)
-const MAPBOX_TOKEN = "pk.eyJ1IjoiYWxkYWlyMjIwOSIsImEiOiJjbWJoYmhmeTEwN3k3MmtwbGthZDM1d3Y1In0.3k4xufhyaHl0SxmaCbHztQ"; // REEMPLAZA con tu token válido
+const MAPBOX_TOKEN = "pk.eyJ1IjoiYWxkYWlyMjIwOSIsImEiOiJjbWJoNXVhMWwwNmptMmlvbmR5aGpremZ3In0.xr_AacCgtuqaJ59XdADkbw"; // REEMPLAZA con tu token válido
 
 // Variables globales para Chart y Mapa
 let chartRiesgo = null;
