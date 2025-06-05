@@ -87,7 +87,10 @@ async function cargarClientes() {
     tr.innerHTML = `<td colspan="4">No hay clientes registrados.</td>`;
     lista.appendChild(tr);
   }
-
+  
+const totalClientes = snap.size; // número total de documentos
+document.getElementById("totalClientesKPI").textContent = `Total de clientes registrados: ${totalClientes}`;
+  
   actualizarGrafico(bajo, medio, alto);
 }
 
