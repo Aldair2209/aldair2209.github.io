@@ -88,8 +88,6 @@ async function cargarClientes() {
     lista.appendChild(tr);
   }
   
-const totalClientes = snap.size; // número total de documentos
-document.getElementById("totalClientesKPI").textContent = `Total de clientes registrados: ${totalClientes}`;
   
   actualizarGrafico(bajo, medio, alto);
 }
