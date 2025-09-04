@@ -2,56 +2,232 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Ciberseguridad</title>
+  <title>📊 Análisis de Pareto</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #f5f7fa;
+      color: #333;
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="style.css">
+    header {
+      background: linear-gradient(135deg, #4f8ef7, #6c63ff);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
+    }
 
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #444;
+      margin-bottom: 20px;
+    }
+
+    input[type="file"] {
+      display: block;
+      margin: 10px auto 20px auto;
+      padding: 10px;
+      border: 2px dashed #6c63ff;
+      border-radius: 8px;
+      background: #f9f9ff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    input[type="file"]:hover {
+      background: #eceaff;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 25px;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table thead {
+      background: #6c63ff;
+      color: white;
+    }
+
+    table th, table td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table tr:hover {
+      background: #f1f1f9;
+    }
+
+    #paretoChart {
+      margin-top: 30px;
+    }
+
+    .conclusion {
+      margin-top: 25px;
+      font-size: 1.1em;
+      font-weight: bold;
+      color: #444;
+      text-align: center;
+      padding: 15px;
+      background: #f0f4ff;
+      border-left: 5px solid #6c63ff;
+      border-radius: 6px;
+    }
+  </style>
 </head>
 <body>
-
-  <h1>Registros</h1>
-
-  <div class="container">
-    <form id="clientForm">
-      <label for="nombre">Nombre:</label>
-      <input type="text" id="nombre" required>
-
-      <label for="correo">Correo:</label>
-      <input type="email" id="correo" required>
-
-      <label for="empresa">Empresa:</label>
-      <input type="text" id="empresa" required>
-
-      <label for="nivelRiesgo">Nivel de Riesgo de la Empresa:</label>
-      <select id="nivelRiesgo" required>
-        <option value="Bajo">Bajo</option>
-        <option value="Medio">Medio</option>
-        <option value="Alto">Alto</option>
-      </select>
-
-      <button type="submit" class="boton">Registrar Cliente</button>
-    </form>
-  </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Empresa</th>
-        <th>Correo</th>
-        <th>Nivel de Riesgo</th>
-      </tr>
-    </thead>
-    <tbody id="clientesLista">
-    </tbody>
-  </table>
+  <header>
+    <h1>📊 Sistema de Análisis de Pareto</h1>
+    <p>Sube tu archivo Excel y obtén el análisis automáticamente</p>
+  </header>
 
   <div class="container">
-    <h2 style="text-align:center; margin-top:30px;">Resumen de Riesgos</h2>
-    <canvas id="graficoRiesgo" width="600" height="400"></canvas>
-    <tbody id="clientesLista"></tbody> 
+    <h2>🔹 Cargar archivo de datos</h2>
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" />
+    <canvas id="paretoChart"></canvas>
+    <div id="tablaResultados"></div>
+    <p class="conclusion" id="conclusion"></p>
   </div>
-  <script type="module" src="script.js"></script>
+
+  <script>
+    document.getElementById("fileInput").addEventListener("change", leerExcel);
+
+    function leerExcel(e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        let datos = json.slice(1).map(row => ({
+          producto: row[0],
+          valor: parseFloat(row[1])
+        }));
+
+        procesarPareto(datos);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function procesarPareto(datos) {
+      datos = datos.filter(d => !isNaN(d.valor));
+      datos.sort((a, b) => b.valor - a.valor);
+
+      let total = datos.reduce((sum, d) => sum + d.valor, 0);
+      let acumulado = 0;
+      datos = datos.map(d => {
+        acumulado += d.valor;
+        return {
+          ...d,
+          porcentaje: ((d.valor / total) * 100).toFixed(2),
+          acumuladoNum: (acumulado / total * 100).toFixed(2)
+        };
+      });
+
+      mostrarTabla(datos);
+      graficarPareto(datos);
+
+      let vital = datos.filter(d => d.acumuladoNum <= 80);
+      document.getElementById("conclusion").innerText =
+        `✅ ${vital.length} factores (${((vital.length / datos.length) * 100).toFixed(1)}%) generan aproximadamente el 80% del resultado.`;
+    }
+
+    function mostrarTabla(datos) {
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Valor</th>
+              <th>%</th>
+              <th>% Acumulado</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      datos.forEach(d => {
+        html += `
+          <tr>
+            <td>${d.producto}</td>
+            <td>${d.valor}</td>
+            <td>${d.porcentaje}%</td>
+            <td>${d.acumuladoNum}%</td>
+          </tr>
+        `;
+      });
+      html += `</tbody></table>`;
+      document.getElementById("tablaResultados").innerHTML = html;
+    }
+
+    function graficarPareto(datos) {
+      const ctx = document.getElementById("paretoChart").getContext("2d");
+
+      if (window.paretoChart && typeof window.paretoChart.destroy === "function") {
+        window.paretoChart.destroy();
+      }
+
+      window.paretoChart = new Chart(ctx, {
+        data: {
+          labels: datos.map(d => d.producto),
+          datasets: [
+            {
+              type: 'bar',
+              label: 'Valor',
+              data: datos.map(d => d.valor),
+              backgroundColor: 'rgba(54, 162, 235, 0.6)',
+              yAxisID: 'y',
+            },
+            {
+              type: 'line',
+              label: '% Acumulado',
+              data: datos.map(d => d.acumuladoNum),
+              borderColor: '#ff4d4d',
+              borderWidth: 2,
+              fill: false,
+              yAxisID: 'y1',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Valor' }
+            },
+            y1: {
+              beginAtZero: true,
+              max: 100,
+              position: 'right',
+              title: { display: true, text: '% Acumulado' }
+            }
+          }
+        }
+      });
+    }
+  </script>
 </body>
 </html>
+
+
