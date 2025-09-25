@@ -1,33 +1,38 @@
 <!doctype html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Caso Práctico - Auditoría de Sistemas en IA Solutions</title>
-
+  <title>Caso Práctico - Auditoría de Sistemas en INTELIGENCIA ARTIFICIAL</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
     :root {
-      --bg: #f4f6fa;
+      --bg: #f6f7fb;
       --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --accent: #2563eb;
-      --accent-hover: #1e40af;
+      --text: #0f1724;
+      --muted: #6b7280;
+      --accent: #0b79d0;
+      --danger: #e63946;
+      --success: #2a9d8f;
     }
 
     [data-theme='dark'] {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --accent: #3b82f6;
-      --accent-hover: #1d4ed8;
+      --bg: #0b1220;
+      --card: #081021;
+      --text: #e6eef8;
+      --muted: #9aa6bb;
+      --accent: #4aa3ff;
+      --danger: #ff6b6b;
+      --success: #3dd68c;
+    }
+
+    * {
+      box-sizing: border-box;
+      transition: background 0.3s, color 0.3s;
     }
 
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
       margin: 0;
       background: var(--bg);
       color: var(--text);
@@ -36,50 +41,58 @@
 
     .container {
       max-width: 1100px;
-      margin: 32px auto;
-      padding: 0 16px;
+      margin: 28px auto;
+      padding: 20px;
     }
 
     header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 16px;
     }
 
     h1 {
-      font-size: 1.8rem;
       margin: 0;
-      font-weight: 600;
+      font-size: 1.8rem;
     }
 
     p.lead {
-      margin: 6px 0 18px;
       color: var(--muted);
+      margin: 6px 0 18px;
+      font-size: 1rem;
     }
 
-    .card {
-      background: var(--card);
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s;
+    .accordion {
+      margin-top: 10px;
+      cursor: pointer;
+      padding: 8px 0;
+      font-weight: bold;
+      color: var(--accent);
     }
 
-    .card:hover {
-      transform: translateY(-2px);
+    .accordion-body {
+      display: none;
+      margin-top: 8px;
     }
 
     .controls-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 20px;
-      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 6px 18px rgba(15, 23, 36, 0.08);
+      animation: fadeIn 0.5s ease;
     }
 
     .card h3 {
-      margin-top: 0;
+      margin: 0 0 6px;
       font-size: 1.2rem;
     }
 
@@ -88,219 +101,356 @@
       font-size: 0.95rem;
     }
 
+    .process-list {
+      margin: 10px 0 0;
+      padding-left: 18px;
+    }
+
+    .controls-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
     button {
       cursor: pointer;
-      border: none;
-      padding: 8px 14px;
+      border: 0;
+      padding: 8px 12px;
       border-radius: 8px;
       font-weight: 600;
-      background: var(--accent);
-      color: #fff;
-      transition: background 0.3s, transform 0.2s;
+      transition: all 0.25s;
     }
 
     button:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
     }
 
     .btn-ghost {
       background: transparent;
       color: var(--accent);
-      border: 1px solid var(--accent);
+      border: 1px solid rgba(11, 121, 208, 0.2);
     }
 
-    .accordion {
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .search-bar {
       margin-top: 12px;
-      padding: 8px 0;
-      font-weight: 600;
-      color: var(--accent);
-      cursor: pointer;
+      display: flex;
+      gap: 10px;
     }
 
-    .accordion-body {
-      display: none;
-      margin-top: 8px;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
+    .search-bar input {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
     }
 
     footer {
-      margin-top: 24px;
+      margin-top: 30px;
       text-align: center;
       color: var(--muted);
       font-size: 0.9rem;
     }
 
-    /* Modal */
-    .modal {
+    /* Formulario */
+    #controlForm {
       display: none;
       position: fixed;
-      z-index: 1000;
-      left: 0; top: 0;
+      top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      justify-content: center;
+      background: rgba(0, 0, 0, 0.55);
       align-items: center;
+      justify-content: center;
+      z-index: 1000;
     }
 
-    .modal-content {
+    #controlForm .form-box {
       background: var(--card);
       padding: 20px;
       border-radius: 12px;
-      width: 90%;
-      max-width: 480px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      text-align: left;
-    }
-
-    .modal-content h3 {
-      margin-top: 0;
-      font-size: 1.3rem;
-    }
-
-    .modal-content label {
-      display: block;
-      font-weight: 600;
-      margin-top: 10px;
-    }
-
-    .modal-content input,
-    .modal-content textarea {
+      max-width: 400px;
       width: 100%;
-      margin-top: 4px;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-      font-family: inherit;
-      font-size: 0.95rem;
-      background: var(--bg);
       color: var(--text);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
     }
 
-    .modal-content textarea {
-      resize: vertical;
-      min-height: 60px;
+    #controlForm input,
+    #controlForm textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
     }
 
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 16px;
+    #controlForm h3 {
+      margin-top: 0;
     }
 
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <header>
       <div>
-        <h1>Caso práctico: Auditoría en IA Solutions</h1>
-        <p class="lead">Gestión de controles de auditoría con procesos y diagramas BPM.</p>
+        <h1>Auditoría de Sistemas en IA Solutions S.A.C.</h1>
+        <p class="lead">Presentación interactiva de controles de auditoría en ciberseguridad, datos y operaciones.</p>
       </div>
-      <div>
-        <button id="toggleTheme" class="btn-ghost">🌙 Modo oscuro</button>
-        <button id="addControlBtn">➕ Agregar control</button>
+      <div class="top-actions flex-row">
+        <button id="toggleTheme" class="btn-ghost">Modo oscuro</button>
+        <button id="addControlBtn" class="btn-primary">➕ Agregar Control</button>
       </div>
     </header>
 
-    <div class="controls-grid" id="controlsGrid"></div>
+    <section style="margin-top:18px">
+      <div class="card">
+        <strong>Contexto</strong>
+        <p class="muted">AI Solutions S.A.C. desarrolla soluciones de IA para salud y finanzas, manejando datos
+          sensibles. La auditoría busca asegurar confidencialidad, integridad y disponibilidad.</p>
+        <div class="search-bar">
+          <input id="searchInput" type="search" placeholder="Buscar control o palabra clave..." />
+          <button id="clearSearch" class="btn-ghost">Limpiar</button>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px">
+      <div class="controls-grid" id="controlsGrid"></div>
+    </section>
+
+    <section style="margin-top:16px">
+      <div class="card">
+        <h3>Acciones rápidas</h3>
+        <div class="controls-actions">
+          <button id="exportAll" class="btn-primary">Exportar todo (JSON)</button>
+        </div>
+      </div>
+    </section>
 
     <footer>
-      © 2025 Caso práctico de auditoría de sistemas en IA Solutions.
+      Diseño: caso práctico para auditoría de sistemas e informática (IA).
     </footer>
   </div>
 
-  <!-- Modal para agregar control -->
-  <div id="controlModal" class="modal">
-    <div class="modal-content">
-      <h3>Agregar nuevo control</h3>
-      <label>Nombre del control</label>
-      <input id="newTitle" placeholder="Ej: Control de accesos"/>
+  <!-- Formulario para agregar control -->
+  <div id="controlForm">
+    <div class="form-box">
+      <h3>Agregar Nuevo Control</h3>
+      <label>Nombre del Control:</label>
+      <input type="text" id="newTitle">
 
-      <label>Objetivo</label>
-      <input id="newObjective" placeholder="Ej: Garantizar seguridad en accesos"/>
+      <label>Objetivo:</label>
+      <textarea id="newObjective"></textarea>
 
-      <label>Procesos (separados por salto de línea)</label>
-      <textarea id="newSteps" placeholder="Proceso 1\nProceso 2\nProceso 3"></textarea>
+      <label>Procesos (uno por línea):</label>
+      <textarea id="newSteps" style="height:100px;"></textarea>
 
-      <div class="modal-actions">
-        <button id="cancelModal" class="btn-ghost">Cancelar</button>
-        <button id="saveControl">Guardar</button>
-      </div>
+      <button id="saveControl" class="btn-primary">Guardar</button>
+      <button id="cancelControl" class="btn-ghost">Cancelar</button>
     </div>
   </div>
 
+  <!-- Mermaid -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script>
-    const controls = [];
-    const grid = document.getElementById("controlsGrid");
+    mermaid.initialize({ startOnLoad: false });
+
+    let controls = [
+      {
+        id: 1, title: 'Control de Accesos a Sistemas Críticos',
+        objective: 'Garantizar que solo personal autorizado acceda a los sistemas de IA.',
+        steps: ['Registrar usuarios en IAM.', 'Aplicar MFA.', 'Revisar cuentas activas.', 'Generar reportes de accesos.']
+      },
+      {
+        id: 2, title: 'Control de Seguridad de Datos Sensibles',
+        objective: 'Proteger datos de IA con cifrado y monitoreo.',
+        steps: ['Clasificar datos.', 'Aplicar cifrado AES-256.', 'Monitorear con DLP.', 'Pruebas de acceso restringido.']
+      }
+    ];
+
+    const grid = document.getElementById('controlsGrid');
 
     function createCard(ctrl) {
-      const div = document.createElement("div");
-      div.className = "card";
+      const div = document.createElement('div');
+      div.className = 'card';
       div.innerHTML = `
         <h3>${ctrl.title}</h3>
         <div class="muted">${ctrl.objective}</div>
-        <div class="accordion">Procesos (clic para ver)</div>
-        <div class="accordion-body">
-          <ol>${ctrl.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+        <div class="accordion" data-id="${ctrl.id}">Procesos (clic para ver)</div>
+        <div class="accordion-body" id="acc-${ctrl.id}">
+          <ol class="process-list">
+            ${ctrl.steps.map(s => `<li>${s}</li>`).join('')}
+          </ol>
+          <div class="controls-actions">
+            <button class="btn-primary btn-export" data-id="${ctrl.id}">Exportar</button>
+            <button class="btn-ghost btn-bpm" data-id="${ctrl.id}">Ver BPM</button>
+            <button class="btn-danger btn-delete" data-id="${ctrl.id}">Eliminar</button>
+          </div>
+          <div id="diagram-${ctrl.id}" style="margin-top:12px; display:none;"></div>
         </div>
       `;
       grid.appendChild(div);
-
-      const acc = div.querySelector(".accordion");
-      const body = div.querySelector(".accordion-body");
-      acc.addEventListener("click", () => {
-        body.style.display = body.style.display === "block" ? "none" : "block";
-      });
     }
 
-    // Modal
-    const modal = document.getElementById("controlModal");
-    const addBtn = document.getElementById("addControlBtn");
-    const cancelBtn = document.getElementById("cancelModal");
-    const saveBtn = document.getElementById("saveControl");
+    function renderAll() {
+      grid.innerHTML = '';
+      controls.forEach(createCard);
+    }
 
-    addBtn.addEventListener("click", () => { modal.style.display = "flex"; });
-    cancelBtn.addEventListener("click", () => { modal.style.display = "none"; });
+    renderAll();
 
-    saveBtn.addEventListener("click", () => {
-      const title = document.getElementById("newTitle").value.trim();
-      const objective = document.getElementById("newObjective").value.trim();
-      const steps = document.getElementById("newSteps").value.trim().split("\n").filter(s => s);
+    // Event delegation
+    document.addEventListener('click', (e) => {
+      // Acordeón
+      if (e.target.matches('.accordion')) {
+        const id = e.target.dataset.id;
+        const body = document.getElementById(`acc-${id}`);
+        body.style.display = (body.style.display === 'block') ? 'none' : 'block';
+      }
 
-      if (!title || !objective || steps.length === 0) {
-        alert("Completa todos los campos.");
+      // Exportar
+      if (e.target.matches('.btn-export')) {
+        const id = Number(e.target.dataset.id);
+        const c = controls.find(x => x.id === id);
+        downloadJSON(c, `control_${id}.json`);
+      }
+
+      // Eliminar
+      if (e.target.matches('.btn-delete')) {
+        const id = Number(e.target.dataset.id);
+        controls = controls.filter(c => c.id !== id);
+        renderAll();
+      }
+
+      // Ver BPM
+      if (e.target.matches('.btn-bpm')) {
+        const id = Number(e.target.dataset.id);
+        const c = controls.find(x => x.id === id);
+        if (!c) return;
+
+        let mermaidDef = `
+graph LR
+    classDef startNode fill:#2a9d8f,stroke:#000,stroke-width:2px,color:#fff,font-size:14px;
+    classDef endNode fill:#e63946,stroke:#000,stroke-width:2px,color:#fff,font-size:14px;
+    classDef processNode fill:#7ec8e3,stroke:#000,stroke-width:1.5px,color:#000,font-size:12px;
+
+    A((Inicio)):::startNode
+`;
+
+        c.steps.forEach((step, i) => {
+          const text = step.replace(/(.{30})/g, "$1\\n");
+          if (i === 0) {
+            mermaidDef += `A --> B0["${text}"]:::processNode\n`;
+          } else {
+            mermaidDef += `B${i - 1} --> B${i}["${text}"]:::processNode\n`;
+          }
+        });
+
+        mermaidDef += `B${c.steps.length - 1} --> Z((Fin)):::endNode\n`;
+
+        const target = document.getElementById(`diagram-${id}`);
+        if (target.style.display === 'block') {
+          target.style.display = 'none';
+          target.innerHTML = '';
+        } else {
+          mermaid.render(`theGraph${id}`, mermaidDef).then(({ svg }) => {
+            target.innerHTML = svg;
+            target.style.display = 'block';
+          });
+        }
+      }
+    });
+
+    function downloadJSON(obj, filename) {
+      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // Exportar todo
+    document.getElementById('exportAll').addEventListener('click', () => {
+      downloadJSON(controls, 'auditoria_controles.json');
+    });
+
+    // Tema
+    const themeBtn = document.getElementById('toggleTheme');
+    themeBtn.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      if (cur === 'dark') {
+        document.documentElement.removeAttribute('data-theme');
+        themeBtn.textContent = 'Modo oscuro';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeBtn.textContent = 'Modo claro';
+      }
+    });
+
+    // Buscar
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearch');
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      document.querySelectorAll('#controlsGrid .card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(q) ? '' : 'none';
+      });
+    });
+    clearBtn.addEventListener('click', () => { searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); });
+
+    // Formulario
+    document.getElementById('addControlBtn').addEventListener('click', () => {
+      document.getElementById('controlForm').style.display = 'flex';
+    });
+    document.getElementById('cancelControl').addEventListener('click', () => {
+      document.getElementById('controlForm').style.display = 'none';
+    });
+    document.getElementById('saveControl').addEventListener('click', () => {
+      const title = document.getElementById('newTitle').value.trim();
+      const objective = document.getElementById('newObjective').value.trim();
+      const stepsText = document.getElementById('newSteps').value.trim();
+
+      if (!title || !objective || !stepsText) {
+        alert("Por favor, completa todos los campos.");
         return;
       }
 
-      const newCtrl = { title, objective, steps };
+      const steps = stepsText.split("\n").map(s => s.trim()).filter(s => s);
+
+      const newCtrl = {
+        id: Date.now(),
+        title,
+        objective,
+        steps
+      };
+
       controls.push(newCtrl);
-      createCard(newCtrl);
+      renderAll();
 
-      modal.style.display = "none";
-      document.getElementById("newTitle").value = "";
-      document.getElementById("newObjective").value = "";
-      document.getElementById("newSteps").value = "";
-    });
-
-    // Theme toggle
-    const themeBtn = document.getElementById("toggleTheme");
-    themeBtn.addEventListener("click", () => {
-      const cur = document.documentElement.getAttribute("data-theme");
-      if (cur === "dark") {
-        document.documentElement.removeAttribute("data-theme");
-        themeBtn.textContent = "🌙 Modo oscuro";
-      } else {
-        document.documentElement.setAttribute("data-theme", "dark");
-        themeBtn.textContent = "☀️ Modo claro";
-      }
+      document.getElementById('newTitle').value = '';
+      document.getElementById('newObjective').value = '';
+      document.getElementById('newSteps').value = '';
+      document.getElementById('controlForm').style.display = 'none';
     });
   </script>
 </body>
