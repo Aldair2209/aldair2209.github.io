@@ -284,6 +284,57 @@
         objective: 'Proteger datos de IA con cifrado y monitoreo.',
         steps: ['Clasificar datos.', 'Aplicar cifrado AES-256.', 'Monitorear con DLP.', 'Pruebas de acceso restringido.']
       }
+      {
+        id: 3, title: 'Control de Desarrollo Seguro (MLOps)',
+        objective: 'Garantizar que el ciclo de vida de los modelos de IA cumpla estándares de seguridad.',
+        steps: [
+         'Implementar repositorios de código con control de versiones (Git).',
+        'Revisar código mediante auditorías automáticas (SonarQube, SAST).',
+       'Probar los modelos en entornos aislados antes de producción.',
+         'Documentar y aprobar cada despliegue por comité de seguridad.'
+                ]
+      },
+            {
+                id: 4, title: 'Control de Respaldo y Recuperación ante Desastres',
+                objective: 'Asegurar la disponibilidad de los sistemas y modelos de IA frente a incidentes.',
+                steps: [
+                    'Programar copias de seguridad diarias de bases de datos y modelos entrenados.',
+                    'Replicar datos en un sitio alterno (cloud / on-premise).',
+                    'Realizar simulacros de recuperación cada trimestre.',
+                    'Documentar tiempos de recuperación (RTO/RPO).'
+                ]
+            },
+              {
+                id: 4, title: 'Control de Respaldo y Recuperación ante Desastres',
+                objective: 'Asegurar la disponibilidad de los sistemas y modelos de IA frente a incidentes.',
+                steps: [
+                    'Programar copias de seguridad diarias de bases de datos y modelos entrenados.',
+                    'Replicar datos en un sitio alterno (cloud / on-premise).',
+                    'Realizar simulacros de recuperación cada trimestre.',
+                    'Documentar tiempos de recuperación (RTO/RPO).'
+                ]
+            },
+                {
+                id: 5, title: 'Control de Monitoreo y Registro de Actividades',
+                objective: 'Detectar anomalías en el uso de sistemas de IA y prevenir fraudes o accesos indebidos.',
+                steps: [
+                    'Implementar un SIEM para centralizar logs de servidores y aplicaciones.',
+                    'Configurar alertas en tiempo real ante comportamientos inusuales.',
+                    'Revisar reportes semanales de logs.',
+                    'Escalar incidentes críticos al equipo de ciberseguridad.'
+                ]
+            },
+            {
+                id: 6, title: 'Control de Cumplimiento Normativo y Ética en IA',
+                objective: 'Verificar que los modelos de IA cumplan con regulaciones (GDPR, ISO 27001) y principios éticos.',
+                steps: [
+                    'Revisar datasets para evitar sesgos o uso indebido de datos personales.',
+                    'Validar que las políticas de privacidad estén actualizadas.',
+                    'Documentar decisiones automatizadas generadas por IA.',
+                    'Realizar auditorías internas semestrales de cumplimiento.'
+              ]
+            }
+        
     ];
 
     const grid = document.getElementById('controlsGrid');
@@ -455,3 +506,4 @@ graph LR
   </script>
 </body>
 </html>
+
