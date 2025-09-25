@@ -1,234 +1,406 @@
-<!DOCTYPE html>
+<!-- CasoPractico_AuditoriaIA.html
+     Página web interactiva que presenta el caso práctico de auditoría
+     en una organización de Inteligencia Artificial (AI Solutions S.A.C.).
+     Contiene 6 controles y sus procesos, con funcionalidades JS: acordeón,
+     búsqueda, exportar control a JSON, imprimir, modo oscuro y diagramas BPM.
+-->
+
+<!doctype html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <title>📊 Análisis de Pareto</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      background: #f5f7fa;
-      color: #333;
-    }
-
-    header {
-      background: linear-gradient(135deg, #4f8ef7, #6c63ff);
-      color: white;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 30px auto;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      text-align: center;
-      color: #444;
-      margin-bottom: 20px;
-    }
-
-    input[type="file"] {
-      display: block;
-      margin: 10px auto 20px auto;
-      padding: 10px;
-      border: 2px dashed #6c63ff;
-      border-radius: 8px;
-      background: #f9f9ff;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    input[type="file"]:hover {
-      background: #eceaff;
-    }
-
-    table {
-      width: 100%;
-      margin-top: 25px;
-      border-collapse: collapse;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    table thead {
-      background: #6c63ff;
-      color: white;
-    }
-
-    table th, table td {
-      padding: 12px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-    }
-
-    table tr:hover {
-      background: #f1f1f9;
-    }
-
-    #paretoChart {
-      margin-top: 30px;
-    }
-
-    .conclusion {
-      margin-top: 25px;
-      font-size: 1.1em;
-      font-weight: bold;
-      color: #444;
-      text-align: center;
-      padding: 15px;
-      background: #f0f4ff;
-      border-left: 5px solid #6c63ff;
-      border-radius: 6px;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>📊 Sistema de Análisis de Pareto</h1>
-    <p>Sube tu archivo Excel y obtén el análisis automáticamente</p>
-  </header>
-
-  <div class="container">
-    <h2>🔹 Cargar archivo de datos</h2>
-    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" />
-    <canvas id="paretoChart"></canvas>
-    <div id="tablaResultados"></div>
-    <p class="conclusion" id="conclusion"></p>
-  </div>
-
-  <script>
-    document.getElementById("fileInput").addEventListener("change", leerExcel);
-
-    function leerExcel(e) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const data = new Uint8Array(event.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-        let datos = json.slice(1).map(row => ({
-          producto: row[0],
-          valor: parseFloat(row[1])
-        }));
-
-        procesarPareto(datos);
-      };
-      reader.readAsArrayBuffer(file);
-    }
-
-    function procesarPareto(datos) {
-      datos = datos.filter(d => !isNaN(d.valor));
-      datos.sort((a, b) => b.valor - a.valor);
-
-      let total = datos.reduce((sum, d) => sum + d.valor, 0);
-      let acumulado = 0;
-      datos = datos.map(d => {
-        acumulado += d.valor;
-        return {
-          ...d,
-          porcentaje: ((d.valor / total) * 100).toFixed(2),
-          acumuladoNum: (acumulado / total * 100).toFixed(2)
-        };
-      });
-
-      mostrarTabla(datos);
-      graficarPareto(datos);
-
-      let vital = datos.filter(d => d.acumuladoNum <= 80);
-      document.getElementById("conclusion").innerText =
-        `✅ ${vital.length} factores (${((vital.length / datos.length) * 100).toFixed(1)}%) generan aproximadamente el 80% del resultado.`;
-    }
-
-    function mostrarTabla(datos) {
-      let html = `
-        <table>
-          <thead>
-            <tr>
-              <th>Incidencia</th>
-              <th>Valor</th>
-              <th>%</th>
-              <th>% Acumulado</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-      datos.forEach(d => {
-        html += `
-          <tr>
-            <td>${d.producto}</td>
-            <td>${d.valor}</td>
-            <td>${d.porcentaje}%</td>
-            <td>${d.acumuladoNum}%</td>
-          </tr>
-        `;
-      });
-      html += `</tbody></table>`;
-      document.getElementById("tablaResultados").innerHTML = html;
-    }
-
-    function graficarPareto(datos) {
-      const ctx = document.getElementById("paretoChart").getContext("2d");
-
-      if (window.paretoChart && typeof window.paretoChart.destroy === "function") {
-        window.paretoChart.destroy();
-      }
-
-      window.paretoChart = new Chart(ctx, {
-        data: {
-          labels: datos.map(d => d.producto),
-          datasets: [
-            {
-              type: 'bar',
-              label: 'Valor',
-              data: datos.map(d => d.valor),
-              backgroundColor: 'rgba(54, 162, 235, 0.6)',
-              yAxisID: 'y',
-            },
-            {
-              type: 'line',
-              label: '% Acumulado',
-              data: datos.map(d => d.acumuladoNum),
-              borderColor: '#ff4d4d',
-              borderWidth: 2,
-              fill: false,
-              yAxisID: 'y1',
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'top' }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              title: { display: true, text: 'Valor' }
-            },
-            y1: {
-              beginAtZero: true,
-              max: 100,
-              position: 'right',
-              title: { display: true, text: '% Acumulado' }
-            }
-          }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Caso Práctico - Auditoría de Sistemas en INTELIGENCIA ARTIFICIAL</title>
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --card: #ffffff;
+            --text: #0f1724;
+            --muted: #6b7280;
+            --accent: #0b79d0
         }
-      });
-    }
-  </script>
+
+
+
+        [data-theme='dark'] {
+            --bg: #0b1220;
+            --card: #081021;
+            --text: #e6eef8;
+            --muted: #9aa6bb;
+            --accent: #4aa3ff
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 20px
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 16px
+        }
+
+        .accordion {
+            margin-top: 10px;
+            border-top: 1px solid #ccc;
+            cursor: pointer;
+            padding: 8px 0;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .accordion-body {
+            display: none;
+            margin-top: 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.6rem
+        }
+
+        p.lead {
+            color: var(--muted);
+            margin: 6px 0 18px
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 6px 18px rgba(15, 23, 36, 0.06)
+        }
+
+        .card h3 {
+            margin: 0 0 8px
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 0.95rem
+        }
+
+        .process-list {
+            margin: 10px 0 0;
+            padding-left: 18px
+        }
+
+        .controls-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px
+        }
+
+        button {
+            cursor: pointer;
+            border: 0;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            font-weight: 600
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(11, 121, 208, 0.12)
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.9rem
+        }
+
+        .flex-row {
+            display: flex;
+            align-items: center
+        }
+
+        @media (max-width:600px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Caso práctico: Auditoría de Sistemas en IA Solutions S.A.C.</h1>
+                <p class="lead">Presentación interactiva de 6 controles de auditoría y sus procesos (Accesos, Datos,
+                    MLOps, Backups, Monitoreo y Cumplimiento).</p>
+            </div>
+            <div class="top-actions flex-row">
+                <button id="toggleTheme" class="btn-ghost">Modo oscuro</button>
+                <button id="printBtn" class="btn-ghost">Imprimir</button>
+            </div>
+        </header>
+
+        <section style="margin-top:18px">
+            <div class="card">
+                <strong>Contexto</strong>
+                <p class="muted">AI Solutions S.A.C. desarrolla soluciones de IA para salud y finanzas. Maneja datos
+                    sensibles (historias clínicas, transacciones). La auditoría busca asegurar confidencialidad,
+                    integridad y disponibilidad.</p>
+                <div class="search-bar">
+                    <input id="searchInput" type="search"
+                        placeholder="Buscar control o palabra clave (ej: backup, MFA, GDPR)..." />
+                    <button id="clearSearch" class="btn-ghost">Limpiar</button>
+                </div>
+            </div>
+        </section>
+
+        <section style="margin-top:16px"" >
+            <div class=" controls-grid" id="controlsGrid">
+            <!-- Cards se generan por JS -->
+    </div>
+    </section>
+
+    <section style="margin-top:16px">
+        <div class="card">
+            <h3>Acciones rápidas</h3>
+            <div class="controls-actions">
+                <button id="exportAll">Exportar todo (JSON)</button>
+                <button id="downloadSample" class="btn-ghost">Descargar HTML</button>
+                <button id="collapseAll" class="btn-ghost">Colapsar todo</button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        Diseño: caso práctico para auditoría de sistemas e informática (IA). Puedes editar los textos y exportarlos.
+    </footer>
+    </div>
+
+
+    <!-- Mermaid para diagramas BPM -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: false });
+
+        const controls = [
+            {
+                id: 1, title: 'Control de Accesos a Sistemas Críticos',
+                objective: 'Garantizar que solo personal autorizado acceda a los sistemas de IA y bases de datos.',
+                steps: [
+                    'Registrar usuarios en un directorio central (Active Directory / IAM).',
+                    'Aplicar autenticación multifactor (MFA).',
+                    'Revisar y actualizar mensualmente las cuentas activas.',
+                    'Generar reportes de accesos para detectar intentos no autorizados.'
+                ]
+            },
+            {
+                id: 2, title: 'Control de Seguridad de Datos Sensibles',
+                objective: 'Proteger datos de entrenamiento y resultados de los modelos de IA que contengan información sensible.',
+                steps: [
+                    'Clasificar los datos según nivel de sensibilidad.',
+                    'Aplicar cifrado en reposo y en tránsito (TLS/SSL, AES-256).',
+                    'Monitorear movimientos de datos (DLP).',
+                    'Realizar pruebas de acceso restringido a datasets.'
+                ]
+            },
+            {
+                id: 3, title: 'Control de Desarrollo Seguro (MLOps)',
+                objective: 'Garantizar que el ciclo de vida de los modelos de IA cumpla estándares de seguridad.',
+                steps: [
+                    'Implementar repositorios de código con control de versiones (Git).',
+                    'Revisar código mediante auditorías automáticas (SonarQube, SAST).',
+                    'Probar los modelos en entornos aislados antes de producción.',
+                    'Documentar y aprobar cada despliegue por comité de seguridad.'
+                ]
+            },
+            {
+                id: 4, title: 'Control de Respaldo y Recuperación ante Desastres',
+                objective: 'Asegurar la disponibilidad de los sistemas y modelos de IA frente a incidentes.',
+                steps: [
+                    'Programar copias de seguridad diarias de bases de datos y modelos entrenados.',
+                    'Replicar datos en un sitio alterno (cloud / on-premise).',
+                    'Realizar simulacros de recuperación cada trimestre.',
+                    'Documentar tiempos de recuperación (RTO/RPO).'
+                ]
+            },
+            {
+                id: 5, title: 'Control de Monitoreo y Registro de Actividades',
+                objective: 'Detectar anomalías en el uso de sistemas de IA y prevenir fraudes o accesos indebidos.',
+                steps: [
+                    'Implementar un SIEM para centralizar logs de servidores y aplicaciones.',
+                    'Configurar alertas en tiempo real ante comportamientos inusuales.',
+                    'Revisar reportes semanales de logs.',
+                    'Escalar incidentes críticos al equipo de ciberseguridad.'
+                ]
+            },
+            {
+                id: 6, title: 'Control de Cumplimiento Normativo y Ética en IA',
+                objective: 'Verificar que los modelos de IA cumplan con regulaciones (GDPR, ISO 27001) y principios éticos.',
+                steps: [
+                    'Revisar datasets para evitar sesgos o uso indebido de datos personales.',
+                    'Validar que las políticas de privacidad estén actualizadas.',
+                    'Documentar decisiones automatizadas generadas por IA.',
+                    'Realizar auditorías internas semestrales de cumplimiento.'
+                ]
+            }
+        ];
+
+        const grid = document.getElementById('controlsGrid');
+
+        function createCard(ctrl) {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+        <h3>${ctrl.title}</h3>
+        <div class="muted">${ctrl.objective}</div>
+        <div class="accordion" data-id="${ctrl.id}">Procesos (clic para ver)</div>
+        <div class="accordion-body" id="acc-${ctrl.id}">
+          <ol class="process-list">
+            ${ctrl.steps.map(s => `<li>${s}</li>`).join('')}
+          </ol>
+          <div class="controls-actions">
+            <button class="btn-export" data-id="${ctrl.id}">Exportar control</button>
+            <button class="btn-bpm btn-ghost" data-id="${ctrl.id}">Ver diagrama BPM</button>
+          </div>
+          <div id="diagram-${ctrl.id}" style="margin-top:12px; display:none;"></div>
+        </div>
+      `;
+            grid.appendChild(div);
+        }
+
+        controls.forEach(createCard);
+
+        // Toggle acordeón
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.accordion')) {
+                const id = e.target.dataset.id;
+                const body = document.getElementById(`acc-${id}`);
+                body.style.display = (body.style.display === 'block') ? 'none' : 'block';
+            }
+
+            // Exportar JSON
+            if (e.target.matches('.btn-export')) {
+                const id = Number(e.target.dataset.id);
+                const c = controls.find(x => x.id === id);
+                downloadJSON(c, `control_${id}.json`);
+            }
+
+            // Ver diagrama BPM estilo Bizagi con procesos azul claro
+            if (e.target.matches('.btn-bpm')) {
+                const id = Number(e.target.dataset.id);
+                const c = controls.find(x => x.id === id);
+
+                let mermaidDef = `
+graph LR
+    %% Definir estilos
+    classDef startNode fill:#28a745,stroke:#000,stroke-width:2px,color:#fff,font-size:14px;
+    classDef endNode fill:#dc3545,stroke:#000,stroke-width:2px,color:#fff,font-size:14px;
+    classDef processNode fill:#7ec8e3,stroke:#000,stroke-width:1.5px,color:#000,font-size:12px;
+
+    %% Nodo inicio
+    A((Inicio)):::startNode
+`;
+
+                // Crear nodos de procesos con salto de línea cada ~30 caracteres
+                c.steps.forEach((step, i) => {
+                    const text = step.replace(/(.{30})/g, "$1\\n"); // salto de línea
+                    if (i === 0) {
+                        mermaidDef += `A --> B0["${text}"]:::processNode\n`;
+                    } else {
+                        mermaidDef += `B${i - 1} --> B${i}["${text}"]:::processNode\n`;
+                    }
+                });
+
+                // Nodo fin
+                mermaidDef += `B${c.steps.length - 1} --> Z((Fin)):::endNode\n`;
+
+                const target = document.getElementById(`diagram-${id}`);
+                if (target.style.display === 'block') {
+                    target.style.display = 'none';
+                    target.innerHTML = '';
+                } else {
+                    mermaid.render(`theGraph${id}`, mermaidDef).then(({ svg }) => {
+                        target.innerHTML = svg;
+                        target.style.display = 'block';
+                    });
+                }
+            }
+
+        });
+
+        function downloadJSON(obj, filename) {
+            const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+        }
+        // Exportar todo
+        document.getElementById('exportAll').addEventListener('click', () => {
+            downloadJSON(controls, 'auditoria_controles.json');
+        });
+
+        // Print
+        document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+        // Collapsar todo
+        document.getElementById('collapseAll').addEventListener('click', () => {
+            document.querySelectorAll('.acc-body').forEach(b => b.style.display = 'none');
+        });
+
+        // Descarga HTML
+        document.getElementById('downloadSample').addEventListener('click', () => {
+            const html = '<!doctype html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'CasoPractico_AuditoriaIA.html'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        });
+
+        // Theme toggle
+        const themeBtn = document.getElementById('toggleTheme');
+        themeBtn.addEventListener('click', () => {
+            const cur = document.documentElement.getAttribute('data-theme');
+            if (cur === 'dark') { document.documentElement.removeAttribute('data-theme'); themeBtn.textContent = 'Modo oscuro'; }
+            else { document.documentElement.setAttribute('data-theme', 'dark'); themeBtn.textContent = 'Modo claro'; }
+        });
+
+        // Search controls
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearSearch');
+        searchInput.addEventListener('input', (e) => {
+            const q = e.target.value.trim().toLowerCase();
+            document.querySelectorAll('#controlsGrid .card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(q) ? '' : 'none';
+            });
+        });
+        clearBtn.addEventListener('click', () => { searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); });
+    </script>
 </body>
+
 </html>
-
-
-
