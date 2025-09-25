@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="es">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -15,7 +14,6 @@
       --danger: #e63946;
       --success: #2a9d8f;
     }
-
     [data-theme='dark'] {
       --bg: #0b1220;
       --card: #081021;
@@ -25,188 +23,63 @@
       --danger: #ff6b6b;
       --success: #3dd68c;
     }
+    * { box-sizing: border-box; transition: background 0.3s, color 0.3s; }
+    body { font-family: "Segoe UI", Roboto, Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.6; }
+    .container { max-width: 1100px; margin: 28px auto; padding: 20px; }
+    header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    h1 { margin: 0; font-size: 1.8rem; }
+    p.lead { color: var(--muted); margin: 6px 0 18px; font-size: 1rem; }
+    .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .card { background: var(--card); border-radius: 14px; padding: 16px; box-shadow: 0 6px 18px rgba(15, 23, 36, 0.08); animation: fadeIn 0.5s ease; }
+    .card h3 { margin: 0 0 6px; font-size: 1.2rem; }
+    .muted { color: var(--muted); font-size: 0.95rem; }
+    .process-list { margin: 10px 0 0; padding-left: 18px; }
+    .controls-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    button { cursor: pointer; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; transition: all 0.25s; }
+    button:hover { opacity: 0.9; transform: translateY(-2px); }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-ghost { background: transparent; color: var(--accent); border: 1px solid rgba(11, 121, 208, 0.2); }
+    .btn-danger { background: var(--danger); color: white; }
+    footer { margin-top: 30px; text-align: center; color: var(--muted); font-size: 0.9rem; }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-    * {
-      box-sizing: border-box;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    body {
-      font-family: "Segoe UI", Roboto, Arial, sans-serif;
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 28px auto;
-      padding: 20px;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 1.8rem;
-    }
-
-    p.lead {
-      color: var(--muted);
-      margin: 6px 0 18px;
-      font-size: 1rem;
-    }
-
-    .accordion {
-      margin-top: 10px;
-      cursor: pointer;
-      padding: 8px 0;
-      font-weight: bold;
-      color: var(--accent);
-    }
-
-    .accordion-body {
-      display: none;
-      margin-top: 8px;
-    }
-
-    .controls-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: 0 6px 18px rgba(15, 23, 36, 0.08);
-      animation: fadeIn 0.5s ease;
-    }
-
-    .card h3 {
-      margin: 0 0 6px;
-      font-size: 1.2rem;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .process-list {
-      margin: 10px 0 0;
-      padding-left: 18px;
-    }
-
-    .controls-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    button {
-      cursor: pointer;
-      border: 0;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: all 0.25s;
-    }
-
-    button:hover {
-      opacity: 0.9;
-      transform: translateY(-2px);
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--accent);
-      border: 1px solid rgba(11, 121, 208, 0.2);
-    }
-
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-
-    .search-bar {
-      margin-top: 12px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .search-bar input {
-      flex: 1;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      outline: none;
-    }
-
-    footer {
-      margin-top: 30px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    /* Formulario */
-    #controlForm {
+    /* === Modal BPM === */
+    #bpmModal {
       display: none;
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.55);
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.65);
+      z-index: 2000;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
     }
-
-    #controlForm .form-box {
+    #bpmModal .modal-content {
       background: var(--card);
       padding: 20px;
       border-radius: 12px;
-      max-width: 400px;
-      width: 100%;
-      color: var(--text);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+      max-width: 90%;
+      max-height: 90%;
+      overflow: auto;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      animation: fadeIn 0.3s ease;
     }
-
-    #controlForm input,
-    #controlForm textarea {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 12px;
+    #bpmModal .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    #bpmModal .modal-header h3 { margin: 0; font-size: 1.2rem; }
+    #bpmModal .close-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
       border-radius: 6px;
-      border: 1px solid #ccc;
-      outline: none;
-    }
-
-    #controlForm h3 {
-      margin-top: 0;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+      padding: 4px 10px;
+      cursor: pointer;
     }
   </style>
 </head>
-
 <body>
   <div class="container">
     <header>
@@ -216,33 +89,11 @@
       </div>
       <div class="top-actions flex-row">
         <button id="toggleTheme" class="btn-ghost">Modo oscuro</button>
-        <button id="addControlBtn" class="btn-primary">➕ Agregar Control</button>
       </div>
     </header>
 
-    <section style="margin-top:18px">
-      <div class="card">
-        <strong>Contexto</strong>
-        <p class="muted">AI Solutions S.A.C. desarrolla soluciones de IA para salud y finanzas, manejando datos
-          sensibles. La auditoría busca asegurar confidencialidad, integridad y disponibilidad.</p>
-        <div class="search-bar">
-          <input id="searchInput" type="search" placeholder="Buscar control o palabra clave..." />
-          <button id="clearSearch" class="btn-ghost">Limpiar</button>
-        </div>
-      </div>
-    </section>
-
     <section style="margin-top:16px">
       <div class="controls-grid" id="controlsGrid"></div>
-    </section>
-
-    <section style="margin-top:16px">
-      <div class="card">
-        <h3>Acciones rápidas</h3>
-        <div class="controls-actions">
-          <button id="exportAll" class="btn-primary">Exportar todo (JSON)</button>
-        </div>
-      </div>
     </section>
 
     <footer>
@@ -250,21 +101,14 @@
     </footer>
   </div>
 
-  <!-- Formulario para agregar control -->
-  <div id="controlForm">
-    <div class="form-box">
-      <h3>Agregar Nuevo Control</h3>
-      <label>Nombre del Control:</label>
-      <input type="text" id="newTitle">
-
-      <label>Objetivo:</label>
-      <textarea id="newObjective"></textarea>
-
-      <label>Procesos (uno por línea):</label>
-      <textarea id="newSteps" style="height:100px;"></textarea>
-
-      <button id="saveControl" class="btn-primary">Guardar</button>
-      <button id="cancelControl" class="btn-ghost">Cancelar</button>
+  <!-- === Modal BPM === -->
+  <div id="bpmModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Diagrama BPM</h3>
+        <button class="close-btn" id="closeBpm">Cerrar</button>
+      </div>
+      <div id="bpmDiagram"></div>
     </div>
   </div>
 
@@ -283,115 +127,31 @@
         id: 2, title: 'Control de Seguridad de Datos Sensibles',
         objective: 'Proteger datos de IA con cifrado y monitoreo.',
         steps: ['Clasificar datos.', 'Aplicar cifrado AES-256.', 'Monitorear con DLP.', 'Pruebas de acceso restringido.']
-      },
-      {
-        id: 3, title: 'Control de Desarrollo Seguro (MLOps)',
-        objective: 'Garantizar que el ciclo de vida de los modelos de IA cumpla estándares de seguridad.',
-        steps: [
-         'Implementar repositorios de código con control de versiones (Git).',
-        'Revisar código mediante auditorías automáticas (SonarQube, SAST).',
-       'Probar los modelos en entornos aislados antes de producción.',
-         'Documentar y aprobar cada despliegue por comité de seguridad.'
-                ]
-      },
-            {
-                id: 4, title: 'Control de Respaldo y Recuperación ante Desastres',
-                objective: 'Asegurar la disponibilidad de los sistemas y modelos de IA frente a incidentes.',
-                steps: [
-                    'Programar copias de seguridad diarias de bases de datos y modelos entrenados.',
-                    'Replicar datos en un sitio alterno (cloud / on-premise).',
-                    'Realizar simulacros de recuperación cada trimestre.',
-                    'Documentar tiempos de recuperación (RTO/RPO).'
-                ]
-            },
-              {
-                id: 4, title: 'Control de Respaldo y Recuperación ante Desastres',
-                objective: 'Asegurar la disponibilidad de los sistemas y modelos de IA frente a incidentes.',
-                steps: [
-                    'Programar copias de seguridad diarias de bases de datos y modelos entrenados.',
-                    'Replicar datos en un sitio alterno (cloud / on-premise).',
-                    'Realizar simulacros de recuperación cada trimestre.',
-                    'Documentar tiempos de recuperación (RTO/RPO).'
-                ]
-            },
-                {
-                id: 5, title: 'Control de Monitoreo y Registro de Actividades',
-                objective: 'Detectar anomalías en el uso de sistemas de IA y prevenir fraudes o accesos indebidos.',
-                steps: [
-                    'Implementar un SIEM para centralizar logs de servidores y aplicaciones.',
-                    'Configurar alertas en tiempo real ante comportamientos inusuales.',
-                    'Revisar reportes semanales de logs.',
-                    'Escalar incidentes críticos al equipo de ciberseguridad.'
-                ]
-            },
-            {
-                id: 6, title: 'Control de Cumplimiento Normativo y Ética en IA',
-                objective: 'Verificar que los modelos de IA cumplan con regulaciones (GDPR, ISO 27001) y principios éticos.',
-                steps: [
-                    'Revisar datasets para evitar sesgos o uso indebido de datos personales.',
-                    'Validar que las políticas de privacidad estén actualizadas.',
-                    'Documentar decisiones automatizadas generadas por IA.',
-                    'Realizar auditorías internas semestrales de cumplimiento.'
-              ]
-            }
-        
+      }
     ];
 
     const grid = document.getElementById('controlsGrid');
-
     function createCard(ctrl) {
       const div = document.createElement('div');
       div.className = 'card';
       div.innerHTML = `
         <h3>${ctrl.title}</h3>
         <div class="muted">${ctrl.objective}</div>
-        <div class="accordion" data-id="${ctrl.id}">Procesos (clic para ver)</div>
-        <div class="accordion-body" id="acc-${ctrl.id}">
+        <div class="accordion-body">
           <ol class="process-list">
             ${ctrl.steps.map(s => `<li>${s}</li>`).join('')}
           </ol>
           <div class="controls-actions">
-            <button class="btn-primary btn-export" data-id="${ctrl.id}">Exportar</button>
             <button class="btn-ghost btn-bpm" data-id="${ctrl.id}">Ver BPM</button>
-            <button class="btn-danger btn-delete" data-id="${ctrl.id}">Eliminar</button>
           </div>
-          <div id="diagram-${ctrl.id}" style="margin-top:12px; display:none;"></div>
-        </div>
-      `;
+        </div>`;
       grid.appendChild(div);
     }
-
-    function renderAll() {
-      grid.innerHTML = '';
-      controls.forEach(createCard);
-    }
-
+    function renderAll() { grid.innerHTML = ''; controls.forEach(createCard); }
     renderAll();
 
-    // Event delegation
+    // Evento botones
     document.addEventListener('click', (e) => {
-      // Acordeón
-      if (e.target.matches('.accordion')) {
-        const id = e.target.dataset.id;
-        const body = document.getElementById(`acc-${id}`);
-        body.style.display = (body.style.display === 'block') ? 'none' : 'block';
-      }
-
-      // Exportar
-      if (e.target.matches('.btn-export')) {
-        const id = Number(e.target.dataset.id);
-        const c = controls.find(x => x.id === id);
-        downloadJSON(c, `control_${id}.json`);
-      }
-
-      // Eliminar
-      if (e.target.matches('.btn-delete')) {
-        const id = Number(e.target.dataset.id);
-        controls = controls.filter(c => c.id !== id);
-        renderAll();
-      }
-
-      // Ver BPM
       if (e.target.matches('.btn-bpm')) {
         const id = Number(e.target.dataset.id);
         const c = controls.find(x => x.id === id);
@@ -405,7 +165,6 @@ graph LR
 
     A((Inicio)):::startNode
 `;
-
         c.steps.forEach((step, i) => {
           const text = step.replace(/(.{30})/g, "$1\\n");
           if (i === 0) {
@@ -414,34 +173,17 @@ graph LR
             mermaidDef += `B${i - 1} --> B${i}["${text}"]:::processNode\n`;
           }
         });
-
         mermaidDef += `B${c.steps.length - 1} --> Z((Fin)):::endNode\n`;
 
-        const target = document.getElementById(`diagram-${id}`);
-        if (target.style.display === 'block') {
-          target.style.display = 'none';
-          target.innerHTML = '';
-        } else {
-          mermaid.render(`theGraph${id}`, mermaidDef).then(({ svg }) => {
-            target.innerHTML = svg;
-            target.style.display = 'block';
-          });
-        }
+        mermaid.render(`theGraph${id}`, mermaidDef).then(({ svg }) => {
+          document.getElementById('bpmDiagram').innerHTML = svg;
+          document.getElementById('bpmModal').style.display = 'flex';
+        });
       }
-    });
-
-    function downloadJSON(obj, filename) {
-      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    // Exportar todo
-    document.getElementById('exportAll').addEventListener('click', () => {
-      downloadJSON(controls, 'auditoria_controles.json');
+      if (e.target.id === 'closeBpm') {
+        document.getElementById('bpmModal').style.display = 'none';
+        document.getElementById('bpmDiagram').innerHTML = '';
+      }
     });
 
     // Tema
@@ -456,55 +198,6 @@ graph LR
         themeBtn.textContent = 'Modo claro';
       }
     });
-
-    // Buscar
-    const searchInput = document.getElementById('searchInput');
-    const clearBtn = document.getElementById('clearSearch');
-    searchInput.addEventListener('input', (e) => {
-      const q = e.target.value.trim().toLowerCase();
-      document.querySelectorAll('#controlsGrid .card').forEach(card => {
-        const text = card.textContent.toLowerCase();
-        card.style.display = text.includes(q) ? '' : 'none';
-      });
-    });
-    clearBtn.addEventListener('click', () => { searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); });
-
-    // Formulario
-    document.getElementById('addControlBtn').addEventListener('click', () => {
-      document.getElementById('controlForm').style.display = 'flex';
-    });
-    document.getElementById('cancelControl').addEventListener('click', () => {
-      document.getElementById('controlForm').style.display = 'none';
-    });
-    document.getElementById('saveControl').addEventListener('click', () => {
-      const title = document.getElementById('newTitle').value.trim();
-      const objective = document.getElementById('newObjective').value.trim();
-      const stepsText = document.getElementById('newSteps').value.trim();
-
-      if (!title || !objective || !stepsText) {
-        alert("Por favor, completa todos los campos.");
-        return;
-      }
-
-      const steps = stepsText.split("\n").map(s => s.trim()).filter(s => s);
-
-      const newCtrl = {
-        id: Date.now(),
-        title,
-        objective,
-        steps
-      };
-
-      controls.push(newCtrl);
-      renderAll();
-
-      document.getElementById('newTitle').value = '';
-      document.getElementById('newObjective').value = '';
-      document.getElementById('newSteps').value = '';
-      document.getElementById('controlForm').style.display = 'none';
-    });
   </script>
 </body>
 </html>
-
-
