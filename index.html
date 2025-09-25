@@ -1,8 +1,8 @@
-<!-- CasoPractico_AuditoriaIA.html
+<!-- CasoPractico_AuditoriaIA.html 
      Página web interactiva que presenta el caso práctico de auditoría
      en una organización de Inteligencia Artificial (AI Solutions S.A.C.).
      Contiene 6 controles y sus procesos, con funcionalidades JS: acordeón,
-     búsqueda, exportar control a JSON, imprimir, modo oscuro y diagramas BPM.
+     búsqueda, exportar control a JSON, modo oscuro y diagramas BPM.
 -->
 
 <!doctype html>
@@ -20,8 +20,6 @@
             --muted: #6b7280;
             --accent: #0b79d0
         }
-
-
 
         [data-theme='dark'] {
             --bg: #0b1220;
@@ -160,7 +158,7 @@
             </div>
             <div class="top-actions flex-row">
                 <button id="toggleTheme" class="btn-ghost">Modo oscuro</button>
-                <button id="printBtn" class="btn-ghost">Imprimir</button>
+                <button id="addControlBtn" class="btn-ghost">Agregar Control</button>
             </div>
         </header>
 
@@ -178,28 +176,45 @@
             </div>
         </section>
 
-        <section style="margin-top:16px"" >
-            <div class=" controls-grid" id="controlsGrid">
-            <!-- Cards se generan por JS -->
-    </div>
-    </section>
-
-    <section style="margin-top:16px">
-        <div class="card">
-            <h3>Acciones rápidas</h3>
-            <div class="controls-actions">
-                <button id="exportAll">Exportar todo (JSON)</button>
-                <button id="downloadSample" class="btn-ghost">Descargar HTML</button>
-                <button id="collapseAll" class="btn-ghost">Colapsar todo</button>
+        <section style="margin-top:16px">
+            <div class="controls-grid" id="controlsGrid">
+                <!-- Cards generados por JS -->
             </div>
-        </div>
-    </section>
+        </section>
 
-    <footer>
-        Diseño: caso práctico para auditoría de sistemas e informática (IA). Puedes editar los textos y exportarlos.
-    </footer>
+        <section style="margin-top:16px">
+            <div class="card">
+                <h3>Acciones rápidas</h3>
+                <div class="controls-actions">
+                    <button id="exportAll">Exportar todo (JSON)</button>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            Diseño: caso práctico para auditoría de sistemas e informática (IA). Puedes editar los textos y exportarlos.
+        </footer>
     </div>
 
+    <!-- Formulario para agregar control -->
+    <div id="controlForm"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+        <div
+            style="background:white; padding:20px; border-radius:10px; max-width:400px; width:100%; color:black;">
+            <h3>Agregar Nuevo Control</h3>
+            <label>Nombre del Control:</label>
+            <input type="text" id="newTitle" style="width:100%; margin-bottom:10px;"><br>
+
+            <label>Objetivo:</label>
+            <textarea id="newObjective" style="width:100%; margin-bottom:10px;"></textarea><br>
+
+            <label>Procesos (uno por línea):</label>
+            <textarea id="newSteps" style="width:100%; height:100px; margin-bottom:10px;"></textarea><br>
+
+            <button id="saveControl">Guardar</button>
+            <button id="cancelControl" class="btn-ghost">Cancelar</button>
+        </div>
+    </div>
 
     <!-- Mermaid para diagramas BPM -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
@@ -349,7 +364,6 @@ graph LR
                     });
                 }
             }
-
         });
 
         function downloadJSON(obj, filename) {
@@ -360,33 +374,23 @@ graph LR
             document.body.appendChild(a); a.click(); a.remove();
             URL.revokeObjectURL(url);
         }
+
         // Exportar todo
         document.getElementById('exportAll').addEventListener('click', () => {
             downloadJSON(controls, 'auditoria_controles.json');
-        });
-
-        // Print
-        document.getElementById('printBtn').addEventListener('click', () => window.print());
-
-        // Collapsar todo
-        document.getElementById('collapseAll').addEventListener('click', () => {
-            document.querySelectorAll('.acc-body').forEach(b => b.style.display = 'none');
-        });
-
-        // Descarga HTML
-        document.getElementById('downloadSample').addEventListener('click', () => {
-            const html = '<!doctype html>\n' + document.documentElement.outerHTML;
-            const blob = new Blob([html], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = 'CasoPractico_AuditoriaIA.html'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
         });
 
         // Theme toggle
         const themeBtn = document.getElementById('toggleTheme');
         themeBtn.addEventListener('click', () => {
             const cur = document.documentElement.getAttribute('data-theme');
-            if (cur === 'dark') { document.documentElement.removeAttribute('data-theme'); themeBtn.textContent = 'Modo oscuro'; }
-            else { document.documentElement.setAttribute('data-theme', 'dark'); themeBtn.textContent = 'Modo claro'; }
+            if (cur === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                themeBtn.textContent = 'Modo oscuro';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeBtn.textContent = 'Modo claro';
+            }
         });
 
         // Search controls
@@ -400,6 +404,46 @@ graph LR
             });
         });
         clearBtn.addEventListener('click', () => { searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); });
+
+        // Abrir formulario
+        document.getElementById('addControlBtn').addEventListener('click', () => {
+            document.getElementById('controlForm').style.display = 'flex';
+        });
+
+        // Cancelar formulario
+        document.getElementById('cancelControl').addEventListener('click', () => {
+            document.getElementById('controlForm').style.display = 'none';
+        });
+
+        // Guardar nuevo control
+        document.getElementById('saveControl').addEventListener('click', () => {
+            const title = document.getElementById('newTitle').value.trim();
+            const objective = document.getElementById('newObjective').value.trim();
+            const stepsText = document.getElementById('newSteps').value.trim();
+
+            if (!title || !objective || !stepsText) {
+                alert("Por favor, completa todos los campos.");
+                return;
+            }
+
+            const steps = stepsText.split("\n").map(s => s.trim()).filter(s => s);
+
+            const newCtrl = {
+                id: controls.length + 1,
+                title,
+                objective,
+                steps
+            };
+
+            controls.push(newCtrl);
+            createCard(newCtrl); // crea la tarjeta en pantalla
+
+            // Reset y cerrar formulario
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newObjective').value = '';
+            document.getElementById('newSteps').value = '';
+            document.getElementById('controlForm').style.display = 'none';
+        });
     </script>
 </body>
 
