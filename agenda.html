@@ -1,275 +1,626 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mi Agenda Digital</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-body, html {
-    margin: 0;
-    padding: 3px;
-    font-family: "Segoe UI", sans-serif;
-    background: linear-gradient(135deg, #c1e0ee, #62a1f3);
-}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Agenda Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-/* BOTONES USUARIO Y LOGOUT */
-#userDisplay, #btn-logout {
-    padding: 8px 14px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 500;
-    display: flex; align-items: center; gap:6px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: 0.3s;
-    position: absolute;
-    top: 30px;
-    z-index: 20;
-}
-#userDisplay {
-    left: 20px;
-    background: #4CAF50;
-    color: white;
-}
-#btn-logout {
-    right: 20px;
-    background: #ff6f61;
-    color: white;
-}
-#userDisplay i, #btn-logout i {
-    font-size: 1rem;
-}
+    <style>
+        /* ======================= FONDO Y BODY ======================= */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background:  #a6c1ee;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-/* DASHBOARD */
-#dashboard {
-    display: none;
-    max-width: 950px;
-    margin: 80px auto 40px auto;
-    padding: 30px;
-    background: url(https://imgs.search.brave.com/16p0rd_sULE5m8cMXnsANgVZ7MDEXZI7E7lRPtIpfAQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJzLmNvbS9p/bWFnZXMvaGQvY2Fs/ZW5kYXItcGljdHVy/ZXMtaXkzdjBxbjk4/eW5lZm85Mi5qcGc);
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
+        /* ======================= HEADER ======================= */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 950px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
 
-#dashboard h2 {
-    text-align: center;
-    color: #111318;
-    margin-bottom: 20px;
-    font-family: cursive;
-}
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
 
-#dashboard input, #dashboard textarea, #dashboard button {
-    width: 90%;
-    max-width: 400px;
-    padding: 12px;
-    margin: 8px auto;
-    display: block;
-    border-radius: 8px;
-    border:1px solid #ffb6b6;
-    font-size: 14px;
-    
-}
+        .header button {
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
 
-#dashboard button {
-    background: #628ce7;
-    color:white;
-    font-weight:bold;
-    border:none;
-    cursor:pointer;
-    transition:0.3s;
-}
-#dashboard button:hover { background:#4fabf7; }
+        .header .logout {
+            background: #ff6f61;
+            color: white;
+        }
 
-/* TABLA ESTILO CALENDARIO */
-#eventsTable {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 10px 10px;
-    margin-top: 20px;
-}
+        .header .logout:hover {
+            background: #e05249;
+        }
 
-#eventsTable th, #eventsTable td {
-    padding: 12px;
-    text-align: center;
-    border-radius: 10px;
-}
+        /* ======================= CALENDARIO ======================= */
+        .calendar {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            max-width: 950px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
 
-#eventsTable th {
-    background: #4fabf7;
-    color: white;
-}
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-#eventsTable tbody tr {
-    background: #f9f9f9;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    transition:0.3s;
-}
-#eventsTable tbody tr:hover { background: #e1f0ff; }
+        .calendar-header h2 {
+            margin: 0;
+            font-size: 22px;
+            color: #333;
+            font-weight: 600;
+        }
 
-.action-btn {
-    background: transparent;
-    border:none;
-    cursor:pointer;
-    font-size: 1rem;
-    margin:0 4px;
-}
-.action-btn.edit { color: #4fabf7; }
-.action-btn.delete { color: #ff4b4b; }
+        .calendar-header button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 22px;
+            color: #5b86e5;
+            transition: 0.2s;
+        }
 
-/* RESPONSIVE */
-@media (max-width:600px){
-    #dashboard { padding:20px; margin-top:100px; }
-    #eventsTable th, #eventsTable td { font-size:13px; padding:8px; }
-}
-</style>
+        .calendar-header button:hover {
+            color: #1d4ed8;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .dates {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .date {
+            padding: 14px;
+            border-radius: 12px;
+            background: #f2f2f2;
+            cursor: pointer;
+            transition: 0.25s;
+            text-align: center;
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .date:hover {
+            background: #dbeafe;
+            transform: translateY(-2px);
+        }
+
+        .date.active {
+            background: #5b86e5;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ======================= EVENT CARDS ======================= */
+        .event-list {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 950px;
+            overflow-x: auto;
+            display: flex;
+            gap: 14px;
+            padding-bottom: 10px;
+            align-items: flex-start;
+        }
+
+        .event-card {
+            min-width: 220px;
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            padding: 18px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: 0.25s;
+            color: #333;
+        }
+
+        .event-card:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .event-card strong {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .event-card span {
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* ======================= FORMULARIO ======================= */
+        form {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.15);
+            width: 80%;
+            max-width: 950px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form input,
+        form textarea,
+        form button {
+            width: 90%;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            transition: 0.25s;
+        }
+
+        form input:focus,
+        form textarea:focus {
+            outline: none;
+            border-color: #5b86e5;
+            box-shadow: 0 0 8px rgba(91, 134, 229, 0.4);
+        }
+
+        form button {
+            background: #5b86e5;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        form button:hover {
+            background: #1d4ed8;
+        }
+
+        /* ======================= MODAL ======================= */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            padding: 25px;
+            border-radius: 16px;
+            max-width: 480px;
+            width: 92%;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+            position: relative;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            cursor: pointer;
+            font-size: 22px;
+            color: #ff8787;
+        }
+
+        .modal-content p {
+            font-size: 14px;
+            margin: 8px 0;
+            color: #444;
+        }
+
+        .modal-content button {
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .modal-content button:first-child {
+            background: #5b86e5;
+            color: #fff;
+            margin-right: 8px;
+        }
+
+        .modal-content button:first-child:hover {
+            background: #1d4ed8;
+        }
+
+        .modal-content button:last-child {
+            background: #ff4b4b;
+            color: #fff;
+        }
+
+        .modal-content button:last-child:hover {
+            background: #030303;
+        }
+
+        /* ======================= TOAST ======================= */
+        .save-modal {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: 300ms ease;
+            z-index: 1100;
+            font-weight: 600;
+        }
+
+        .save-modal.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width:600px) {
+            .event-card {
+                min-width: 180px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- BOTONES USUARIO Y LOGOUT -->
-<button id="btn-logout" style="display:none;" onclick="logout()"><i class="fa fa-right-from-bracket"></i> Cerrar Sesión</button>
-<button id="userDisplay" style="display:none;"><i class="fa fa-user"></i> Usuario</button>
+    <div class="header">
+        <button class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+        <div class="user-info"><i class="fas fa-user-circle"></i><span id="userEmail"></span></div>
+    </div>
 
-<!-- DASHBOARD -->
-<section id="dashboard">
-    <h2>Agendar Evento</h2>
-    <input type="text" id="eventTitle" placeholder="Título del evento">
-    <input type="date" id="eventDate">
-    <input type="time" id="eventTime">
-    <textarea id="eventDesc" placeholder="Descripción" rows="3"></textarea>
-    <button onclick="saveEvent()">Guardar Evento</button>
+    <div class="calendar">
+        <div class="calendar-header">
+            <button onclick="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+            <h2 id="monthYear"></h2>
+            <button onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="days">
+            <div>Dom</div>
+            <div>Lun</div>
+            <div>Mar</div>
+            <div>Mié</div>
+            <div>Jue</div>
+            <div>Vie</div>
+            <div>Sáb</div>
+        </div>
+        <div class="dates" id="dates"></div>
+    </div>
 
-    <h3 style="font-family: cursive;">Mis Eventos Agendados</h3>
-    <table id="eventsTable">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</section>
+    <h3 style="max-width:950px; width:100%; margin-top:14px;">Mis Eventos</h3>
+    <div class="event-list" id="eventList"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+    <form id="eventForm">
+        <input type="hidden" id="eventId">
+        <input type="text" id="title" placeholder="Título del evento" required>
+        <input type="date" id="date" required>
+        <input type="time" id="time" required>
+        <textarea id="desc" placeholder="Descripción"></textarea>
+        <button type="submit">Guardar Evento</button>
+    </form>
 
-const firebaseConfig = {
-    apiKey: "AIzaSyATMynxurMN4LNI18z_ATn_OhGGJ9Ko4zk",
-    authDomain: "ciberseguridad22.firebaseapp.com",
-    projectId: "ciberseguridad22",
-    storageBucket: "ciberseguridad22.appspot.com",
-    messagingSenderId: "799641106752",
-    appId: "1:799641106752:web:6bfe439994a9281ffc62a5"
-};
+    <!-- MODAL DETALLE -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle"></h3>
+            <p><strong>Fecha:</strong> <span id="modalDate"></span></p>
+            <p><strong>Hora:</strong> <span id="modalTime"></span></p>
+            <p><strong>Descripción:</strong> <span id="modalDesc"></span></p>
+            <div style="margin-top:12px; display:flex; gap:8px;">
+                <button style="flex:1;" onclick="editFromModal()">Editar</button>
+                <button style="flex:1; background:#ff4b4b; color:#fff; border:none;"
+                    onclick="deleteCurrent()">Eliminar</button>
+            </div>
+        </div>
+    </div>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    <!-- TOAST GUARDADO -->
+    <div id="saveToast" class="save-modal" aria-live="polite">Evento registrado</div>
 
-window.saveEvent = async function () {
-    const user = auth.currentUser;
-    const title = document.getElementById("eventTitle").value;
-    const date = document.getElementById("eventDate").value;
-    const time = document.getElementById("eventTime").value;
-    const desc = document.getElementById("eventDesc").value;
-    if (!title || !date || !time) { alert("Completa los campos obligatorios"); return; }
-    try {
-        await addDoc(collection(db, "eventos"), { uid: user.uid, title, date, time, desc, createdAt: new Date() });
-        document.getElementById("eventTitle").value="";
-        document.getElementById("eventDate").value="";
-        document.getElementById("eventTime").value="";
-        document.getElementById("eventDesc").value="";
-    } catch (e) { alert("Error: " + e.message); }
-}
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import {
+            getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-window.logout = async function () {
-    try {
-        await signOut(auth);
-        window.location.href = "index.html";
-    } catch (e) { alert("Error al cerrar sesión"); console.error(e); }
-}
+        const firebaseConfig = {
+            apiKey: "AIzaSyATMynxurMN4LNI18z_ATn_OhGGJ9Ko4zk",
+            authDomain: "ciberseguridad22.firebaseapp.com",
+            projectId: "ciberseguridad22",
+            storageBucket: "ciberseguridad22.appspot.com",
+            messagingSenderId: "799641106752",
+            appId: "1:799641106752:web:6bfe439994a9281ffc62a5"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-// Control de sesión
-onAuthStateChanged(auth, (user) => {
-    const userDisplay = document.getElementById("userDisplay");
-    const logoutBtn = document.getElementById("btn-logout");
-    const dashboard = document.getElementById("dashboard");
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let selectedDate = new Date();
+        let eventos = [];              // lista con todos los eventos del usuario
+        let currentModalEvent = null;
 
-    if (user) {
-        userDisplay.style.display = "flex";
-        userDisplay.textContent = ` ${user.email}`;
-        logoutBtn.style.display = "flex";
-        dashboard.style.display = "block";
+        // ----- FUNCIÓN AUXILIAR: FORMATEAR FECHA LOCAL -----
+        function formatDateLocal(date) {
+            const y = date.getFullYear();
+            const m = (date.getMonth() + 1).toString().padStart(2, "0");
+            const d = date.getDate().toString().padStart(2, "0");
+            return `${y}-${m}-${d}`;
+        }
 
-        const q = query(collection(db, "eventos"), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
-            const table = document.getElementById("eventsTable").querySelector("tbody");
-            table.innerHTML = "";
-            snapshot.forEach(docSnap => {
-                const data = docSnap.data();
-                if (data.uid === user.uid) {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${data.title}</td>
-                        <td>${data.date}</td>
-                        <td>${data.time}</td>
-                        <td>${data.desc}</td>
-                        <td>
-                            <button class="action-btn edit" onclick="editEvent('${docSnap.id}','${data.title}','${data.date}','${data.time}','${data.desc}')"><i class="fa fa-pen"></i></button>
-                            <button class="action-btn delete" onclick="deleteEvent('${docSnap.id}')"><i class="fa fa-trash"></i></button>
-                        </td>`;
-                    table.appendChild(row);
+        // ----- RENDER CALENDARIO -----
+        function renderCalendar() {
+            const monthYear = document.getElementById("monthYear");
+            const dates = document.getElementById("dates");
+            dates.innerHTML = "";
+
+            const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            monthYear.innerText = `${months[currentMonth]} ${currentYear}`;
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            // celdas vacías previas
+            for (let i = 0; i < firstDay; i++) dates.innerHTML += `<div></div>`;
+
+            // celdas de cada día
+            for (let d = 1; d <= lastDate; d++) {
+                const date = new Date(currentYear, currentMonth, d);
+                const div = document.createElement("div");
+                div.classList.add("date");
+                div.innerText = d;
+
+                const dateStr = formatDateLocal(date);
+                div.dataset.date = dateStr;
+
+                // marcar como activa si coincide con la fecha seleccionada
+                if (dateStr === formatDateLocal(selectedDate)) div.classList.add("active");
+
+                // clic en la celda: marcar y abrir modal si hay eventos
+                div.onclick = () => highlightDate(dateStr);
+
+                // indicador de eventos
+                const hasEvent = eventos.some(ev => ev.date === dateStr);
+                if (hasEvent) {
+                    const dot = document.createElement("div");
+                    dot.style.width = "8px";
+                    dot.style.height = "8px";
+                    dot.style.borderRadius = "50%";
+                    dot.style.background = "#ff6f61";
+                    dot.style.margin = "6px auto 0 auto";
+                    div.appendChild(dot);
                 }
+
+                dates.appendChild(div);
+            }
+        }
+
+        // ----- NAVEGAR MESES -----
+        window.prevMonth = () => {
+            currentMonth--;
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+            renderCalendar();
+        }
+        window.nextMonth = () => {
+            currentMonth++;
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            renderCalendar();
+        }
+
+        // ----- MARCAR FECHA Y ABRIR MODAL -----
+        function highlightDate(dateStr, ev = null) {
+            selectedDate = new Date(dateStr + "T00:00:00");
+            renderCalendar();
+
+            // desplazar al centro de la celda
+            const cell = document.querySelector(`.date[data-date='${dateStr}']`);
+            if (cell) cell.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
+            // abrir modal: si se pasa un evento específico, usarlo; si no, abrir el primero del día
+            if (ev) openModal(ev);
+            else {
+                const dayEvents = eventos.filter(x => x.date === dateStr);
+                if (dayEvents.length > 0) openModal(dayEvents[0]);
+            }
+        }
+
+
+        // ----- MODAL (detalle) -----
+        function openModal(ev) {
+            currentModalEvent = ev;
+            document.getElementById("modalTitle").innerText = ev.title;
+            document.getElementById("modalDate").innerText = ev.date;
+            document.getElementById("modalTime").innerText = ev.time;
+            document.getElementById("modalDesc").innerText = ev.desc;
+            document.getElementById("eventModal").style.display = "flex";
+        }
+        window.closeModal = () => { document.getElementById("eventModal").style.display = "none"; }
+
+        // editar desde modal: carga datos en formulario
+        window.editFromModal = () => {
+            if (!currentModalEvent) return;
+            document.getElementById("eventId").value = currentModalEvent.id;
+            document.getElementById("title").value = currentModalEvent.title;
+            document.getElementById("date").value = currentModalEvent.date;
+            document.getElementById("time").value = currentModalEvent.time;
+            document.getElementById("desc").value = currentModalEvent.desc;
+            closeModal();
+            // opcional: focus en el título
+            document.getElementById("title").focus();
+        };
+
+        // eliminar evento actual (desde modal)
+        window.deleteCurrent = async () => {
+            if (!currentModalEvent) return;
+            if (!confirm("¿Eliminar este evento?")) return;
+            await deleteDoc(doc(db, "eventos", currentModalEvent.id));
+            closeModal();
+        };
+
+        // ----- TOAST GUARDADO -----
+        function showSaveToast(msg = "Evento guardado") {
+            const el = document.getElementById("saveToast");
+            el.textContent = msg + " ✅";
+            el.classList.add("show");
+            setTimeout(() => el.classList.remove("show"), 2200);
+        }
+
+        // ----- FIREBASE: cargar eventos del usuario -----
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+                return;
+            }
+            document.getElementById("userEmail").innerText = user.email;
+
+            const q = query(collection(db, "eventos"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                eventos = [];
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.uid === user.uid) {
+                        eventos.push({ id: docSnap.id, ...data });
+                    }
+                });
+                renderEvents();
+                renderCalendar(); // para mostrar puntos en fechas con eventos y respetar selectedDate
             });
         });
 
-    } else {
-        userDisplay.style.display = "none";
-        logoutBtn.style.display = "none";
-        dashboard.style.display = "none";
-        alert("Debes iniciar sesión"); // Puedes redirigir a login si quieres
-        window.location.href = "index.html";
-    }
-});
+        // ---- RENDER TODAS LAS CARDS HORIZONTALES ----
+        function renderEvents() {
+            const eventList = document.getElementById("eventList");
+            eventList.innerHTML = "";
+            if (!eventos.length) {
+                eventList.innerHTML = "<p style='color:#666;'>No hay eventos registrados</p>";
+                return;
+            }
+            eventos.forEach(ev => {
+                const card = document.createElement("div");
+                card.className = "event-card";
+                // tú dejaste solo el título: lo mantengo, pero también dejo fecha y hora en pequeño
+                card.innerHTML = `<strong style -2>${escapeHtml(ev.title)}</strong>
+                         `;
+                card.onclick = () => highlightDate(ev.date, ev);
+                eventList.appendChild(card);
+            });
+        }
 
-// Eliminar evento
-window.deleteEvent = async function(id){
-    if(confirm("¿Deseas eliminar este evento?")){
-        await deleteDoc(doc(db,"eventos",id));
-    }
-}
+        // pequeña función para escapar texto al inyectarlo
+        function escapeHtml(str) {
+            return String(str || "")
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
 
-// Editar evento
-window.editEvent = function(id,title,date,time,desc){
-    document.getElementById("eventTitle").value = title;
-    document.getElementById("eventDate").value = date;
-    document.getElementById("eventTime").value = time;
-    document.getElementById("eventDesc").value = desc;
+        // ----- SUBMIT FORM (crear/editar) -----
+        document.getElementById("eventForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const id = document.getElementById("eventId").value;
+            const title = document.getElementById("title").value.trim();
+            const date = document.getElementById("date").value;
+            const time = document.getElementById("time").value;
+            const desc = document.getElementById("desc").value.trim();
 
-    const saveBtn = document.querySelector("#dashboard button");
-    saveBtn.textContent = "Actualizar Evento";
-    saveBtn.onclick = async function(){
-        const newTitle = document.getElementById("eventTitle").value;
-        const newDate = document.getElementById("eventDate").value;
-        const newTime = document.getElementById("eventTime").value;
-        const newDesc = document.getElementById("eventDesc").value;
-        if(!newTitle || !newDate || !newTime){ alert("Completa los campos obligatorios"); return; }
-        await updateDoc(doc(db,"eventos",id), { title:newTitle, date:newDate, time:newTime, desc:newDesc });
-        saveBtn.textContent = "Guardar Evento";
-        saveBtn.onclick = window.saveEvent;
-        document.getElementById("eventTitle").value="";
-        document.getElementById("eventDate").value="";
-        document.getElementById("eventTime").value="";
-        document.getElementById("eventDesc").value="";
-    }
-}
-</script>
+            const user = auth.currentUser;
+            if (!user) return;
 
+            try {
+                if (id) {
+                    await updateDoc(doc(db, "eventos", id), { title, date, time, desc });
+                    showSaveToast("Evento actualizado");
+                } else {
+                    await addDoc(collection(db, "eventos"), { uid: user.uid, title, date, time, desc, createdAt: serverTimestamp() });
+                    showSaveToast("Evento registrado");
+                }
+                document.getElementById("eventForm").reset();
+                document.getElementById("eventId").value = "";
+            } catch (err) {
+                console.error(err);
+                alert("Error al guardar: " + (err.message || err));
+            }
+        });
+
+        // ----- LOGOUT -----
+        window.logout = async function () {
+            await signOut(auth);
+            window.location.href = "index.html";
+        };
+
+        // render inicial
+        renderCalendar();
+    </script>
 </body>
-</html
+
+</html>
+
